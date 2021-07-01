@@ -89,45 +89,23 @@ if (WIN32)
   list (APPEND GLEW_SRC_FILES ${GLEW_DIR}/build/glew.rc)
 endif ()
 
-option(BUILD_GLEW_STATIC_LIBS "Build the static glm library" ON)
 
-if(BUILD_GLEW_STATIC_LIBS)
-  add_library (glew_s STATIC ${GLEW_PUBLIC_HEADERS_FILES} ${GLEW_SRC_FILES})
-  set_target_properties (glew_s PROPERTIES COMPILE_DEFINITIONS "GLEW_STATIC" OUTPUT_NAME "${GLEW_LIB_NAME}" PREFIX lib)
-else()
-  add_library (glew SHARED ${GLEW_PUBLIC_HEADERS_FILES} ${GLEW_SRC_FILES})
-  set_target_properties (glew PROPERTIES COMPILE_DEFINITIONS "GLEW_BUILD" OUTPUT_NAME "${GLEW_LIB_NAME}" PREFIX "${DLL_PREFIX}"
-                                       VERSION ${GLEW_VERSION}
-                                       SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR})
-endif()
+  add_library (glew STATIC ${GLEW_PUBLIC_HEADERS_FILES} ${GLEW_SRC_FILES})
+  set_target_properties (glew PROPERTIES COMPILE_DEFINITIONS "GLEW_STATIC" OUTPUT_NAME "${GLEW_LIB_NAME}" PREFIX lib)
+
 
 if (MSVC)
   # add options from visual studio project
-if(BUILD_GLEW_STATIC_LIBS)
-  target_compile_definitions (glew_s PRIVATE "GLEW_STATIC;VC_EXTRALEAN")
-else()
-  target_compile_definitions (glew PRIVATE "GLEW_BUILD;VC_EXTRALEAN")
-  target_link_libraries (glew LINK_PRIVATE -BASE:0x62AA0000)
-endif()
+  target_compile_definitions (glew PRIVATE "GLEW_STATIC;VC_EXTRALEAN")
 
   # kill security checks which are dependent on stdlib
-if(BUILD_GLEW_STATIC_LIBS)
-  target_compile_options (glew_s PRIVATE -GS-)
-else()
   target_compile_options (glew PRIVATE -GS-)
-  # remove stdlib dependency
-  target_link_libraries (glew LINK_PRIVATE -nodefaultlib -noentry)
-  string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
-endif()
-  
+
 elseif (WIN32 AND ((CMAKE_C_COMPILER_ID MATCHES "GNU") OR (CMAKE_C_COMPILER_ID MATCHES "Clang")))
   # remove stdlib dependency on windows with GCC and Clang (for similar reasons
   # as to MSVC - to allow it to be used with any Windows compiler)
-if(BUILD_GLEW_STATIC_LIBS)
-  target_compile_options (glew_s PRIVATE -fno-builtin -fno-stack-protector)
-else()
   target_compile_options (glew PRIVATE -fno-builtin -fno-stack-protector)
-endif()
+
   target_link_libraries (glew LINK_PRIVATE -nostdlib)
 endif ()
 
@@ -144,35 +122,27 @@ if (BUILD_FRAMEWORK)
   )
 endif()
 
-if(BUILD_GLEW_STATIC_LIBS)
-  target_link_libraries (glew_s ${GLEW_LIBRARIES})
-else()
-  target_link_libraries (glew LINK_PUBLIC ${GLEW_LIBRARIES})
-endif()
+
+target_link_libraries (glew ${GLEW_LIBRARIES})
+
 
 if(CMAKE_VERSION VERSION_LESS 2.8.12)
   set(MAYBE_EXPORT "")
 else()
-  if(BUILD_GLEW_STATIC_LIBS)
-    target_compile_definitions(glew_s INTERFACE "GLEW_STATIC")
-    target_include_directories(glew_s PUBLIC $<INSTALL_INTERFACE:include>)
-  else()
+
+    target_compile_definitions(glew INTERFACE "GLEW_STATIC")
     target_include_directories(glew PUBLIC $<INSTALL_INTERFACE:include>)
-  endif()
-  #foreach(t glew glew_s)
+
+  #foreach(t glew)
   #  target_include_directories(${t} PUBLIC $<INSTALL_INTERFACE:include>)
   #endforeach()
   set(MAYBE_EXPORT EXPORT glew-targets)
 endif()
 
 set(targets_to_install "")
-if(NOT DEFINED BUILD_GLEW_STATIC_LIBS)
-  list(APPEND targets_to_install glew)
-endif()
 
-if(BUILD_GLEW_STATIC_LIBS)
-  list(APPEND targets_to_install glew_s)
-endif()
+  list(APPEND targets_to_install glew)
+
 
 install ( TARGETS ${targets_to_install}
           ${MAYBE_EXPORT}
@@ -202,15 +172,6 @@ install(FILES ${GLEW_DIR}/glew.pc
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
 
-if(WIN32 AND MSVC AND (NOT MSVC_VERSION LESS 1600) AND (NOT CMAKE_VERSION VERSION_LESS "3.1"))
-	if(NOT DEFINED BUILD_GLEW_STATIC_LIBS)
-		install(
-			FILES $<TARGET_PDB_FILE:glew>
-			DESTINATION ${CMAKE_INSTALL_LIBDIR}
-			CONFIGURATIONS Debug RelWithDebInfo
-		)
-	endif()
-endif()
 
 install (FILES
     ${GLEW_DIR}/include/GL/wglew.h

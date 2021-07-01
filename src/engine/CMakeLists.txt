@@ -80,48 +80,25 @@ endforeach()
 add_library(engine ${SRC_ALL})
 
 if(WIN32)
-	find_package(OpenGL REQUIRED)
-	include_directories(${OPENGL_INCLUDE_DIR})
-	
-	target_link_libraries(engine
-		glfw
-		lua
-		box2d
-		jsoncpp
-		pluto
-		soil
-		spdlog
-		${GLFW_LIBRARIES}
-		${OPENGL_LIBRARIES}
-	)
- 
 elseif(UNIX)
-	find_package(OpenGL REQUIRED)
-	include_directories(${OPENGL_INCLUDE_DIR})
-
-	target_link_libraries(engine
-		glfw
-		lua
-		box2d
-		jsoncpp
-		pluto
-		audio
-		soil
-		spdlog
-		${GLFW_LIBRARIES}
-		${OPENGL_LIBRARIES}
-	)
- 
-endif()
-
-if(BUILD_GLM_STATIC_LIBS)
-    target_link_libraries(engine glm_static)
+	target_link_libraries(engine audio)
 else()
-    target_link_libraries(engine glm_shared)
+	message("NOT SUPPORTED PLATFORM")
 endif()
 
-if(BUILD_GLEW_STATIC_LIBS)
-	target_link_libraries(engine glew_s)
-else()
-	target_link_libraries(engine glew)
-endif()
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIR})
+
+target_link_libraries(engine
+	glfw
+	lua
+	box2d
+	jsoncpp
+	pluto
+	soil
+	spdlog
+	glm
+	glew
+	${GLFW_LIBRARIES}
+	${OPENGL_LIBRARIES}
+)
