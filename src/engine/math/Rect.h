@@ -21,8 +21,8 @@ struct Rect
     }
 };
 
-typedef Rect<int>   RectInt;
-typedef Rect<float> RectFloat;
+typedef Rect<int32>   RectInt;
+typedef Rect<float32> RectFloat;
 
 inline RectFloat MakeRectRB(Vec2F lt, Vec2F rb) { return RectFloat{ lt.x, lt.y, rb.x, rb.y }; }
 inline RectFloat MakeRectWH(Vec2F lt, Vec2F size) { return RectFloat{ lt.x, lt.y, lt.x + size.x, lt.y + size.y }; }

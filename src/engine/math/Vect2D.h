@@ -6,10 +6,7 @@
 #include <cstdlib>
 
 #include "Constants.h"
-
-//#define PI    3.141593f
-//#define PI2   6.283185f
-//#define PI4   0.785398f
+#include "common/Types.h"
 
 template <typename T>
 class Vec2D
@@ -36,26 +33,26 @@ public:
         return (&x)[i];
     }
 
-    Vec2D<T>& operator-=(const Vec2D<T> &v)
+    Vec2D<T>& operator-=(const Vec2D<T>& v)
     {
         x -= v.x;
         y -= v.y;
         return *this;
     }
 
-    Vec2D<T>& operator+=(const Vec2D<T> &v)
+    Vec2D<T>& operator+=(const Vec2D<T>& v)
     {
         x += v.x;
         y += v.y;
         return *this;
     }
 
-    Vec2D<T> operator + (const Vec2D<T> &v) const
+    Vec2D<T> operator + (const Vec2D<T>& v) const
     {
         return Vec2D{ x + v.x, y + v.y };
     }
 
-    Vec2D<T> operator - (const Vec2D<T> &v) const
+    Vec2D<T> operator - (const Vec2D<T>& v) const
     {
         return Vec2D{ x - v.x, y - v.y };
     }
@@ -70,7 +67,7 @@ public:
         return Vec2D<T>{ x * a, y * a };
     }
 
-    Vec2D<T> operator * (const Vec2D<T> &v) const
+    Vec2D<T> operator * (const Vec2D<T>& v) const
     {
         return Vec2D<T>{ x * v.x, y * v.y };
     }
@@ -80,7 +77,7 @@ public:
         return Vec2D{ x / a, y / a };
     }
 
-    Vec2D<T> operator / (const Vec2D<T> &v) const
+    Vec2D<T> operator / (const Vec2D<T>& v) const
     {
         return Vec2D<T>{ x / v.x, y / v.y };
     }
@@ -111,12 +108,12 @@ public:
         return Vec2D<T>{ v.x * a, v.y * a };
     }
 
-    bool operator ==(const Vec2D<T> &v) const
+    bool operator ==(const Vec2D<T>& v) const
     {
         return v.x == x && v.y == y;
     }
 
-    bool operator !=(const Vec2D<T> &v) const
+    bool operator !=(const Vec2D<T>& v) const
     {
         return v.x != x || v.y != y;
     }
@@ -158,10 +155,10 @@ public:
         return *this;
     }
     
-    T Distance(const Vec2D<T> &v2)const
+    T Distance(const Vec2D<T>& v)const
     {
-        float ySeparation = v2.y - y;
-        float xSeparation = v2.x - x;
+        float ySeparation = v.y - y;
+        float xSeparation = v.x - x;
 
         return sqrt(ySeparation * ySeparation + xSeparation * xSeparation);
     }
@@ -174,31 +171,31 @@ public:
 };
 
 template<typename T>
-inline T Vec2DDistance(const Vec2D<T> &v1, const Vec2D<T> &v2)
+inline T Vec2DDistance(const Vec2D<T>& v1, const Vec2D<T>& v2)
 {
     return v1.Distance(v2);
 }
 
 template<typename T>
-inline Vec2D<T> Vec2dFloor(const Vec2D<T> &vec)
+inline Vec2D<T> Vec2dFloor(const Vec2D<T>& vec)
 {
     return{ std::floor(vec.x), std::floor(vec.y) };
 }
 
 template<typename T>
-inline Vec2D<T> Vec2dFloor(float x, float y)
+inline Vec2D<T> Vec2dFloor(T x, T y)
 {
     return{ std::floor(x), std::floor(y) };
 }
 
 template<typename T>
-inline Vec2D<T> Vec2dDirection(float angle)
+inline Vec2D<T> Vec2dDirection(T angle)
 {
     return{ cosf(angle), sinf(angle) };
 }
 
 template<typename T>
-inline Vec2D<T> Vec2dAddDirection(const Vec2D<T> &a, const Vec2D<T> &b)
+inline Vec2D<T> Vec2dAddDirection(const Vec2D<T>& a, const Vec2D<T>& b)
 {
     assert(std::abs(a.sqr() - 1) < 1e-5);
     assert(std::abs(b.sqr() - 1) < 1e-5);
@@ -206,7 +203,7 @@ inline Vec2D<T> Vec2dAddDirection(const Vec2D<T> &a, const Vec2D<T> &b)
 }
 
 template<typename T>
-inline Vec2D<T> Vec2dSubDirection(const Vec2D<T> &a, const Vec2D<T> &b)
+inline Vec2D<T> Vec2dSubDirection(const Vec2D<T>& a, const Vec2D<T>& b)
 {
     assert(std::abs(a.sqr() - 1) < 1e-5);
     assert(std::abs(b.sqr() - 1) < 1e-5);
@@ -214,25 +211,25 @@ inline Vec2D<T> Vec2dSubDirection(const Vec2D<T> &a, const Vec2D<T> &b)
 }
 
 template<typename T>
-inline T Vec2dCross(const Vec2D<T> &a, const Vec2D<T> &b)
+inline T Vec2dCross(const Vec2D<T>& a, const Vec2D<T>& b)
 {
     return a.x*b.y - a.y*b.x;
 }
 
 template<typename T>
-inline T Vec2dDot(const Vec2D<T> &a, const Vec2D<T> &b)
+inline T Vec2dDot(const Vec2D<T>& a, const Vec2D<T>& b)
 {
     return a.x*b.x + a.y*b.y;
 }
 
 template<typename T>
-inline Vec2D<T> Vec2dMulX(Vec2D<T> v, T m)
+inline Vec2D<T> Vec2dMulX(const Vec2D<T>& v, T m)
 {
     return Vec2D<T>{ v.x * m, v.y };
 }
 
 template<typename T>
-inline Vec2D<T> Vec2dMulY(Vec2D<T> v, float m)
+inline Vec2D<T> Vec2dMulY(const Vec2D<T>& v, float m)
 {
     return Vec2D<T>{ v.x, v.y * m };
 }
@@ -250,4 +247,4 @@ inline Vec2D<T> vrand(T len)
     return Vec2dDirection<T>(frand(PI2)) * len;
 }
 
-using Vec2F = Vec2D<float>;
+using Vec2F = Vec2D<float32>;
