@@ -7,7 +7,7 @@ if(WIN32)
 endif()
 
 include_directories(
-	${Utf8cpp_SOURCE_DIR}	
+	${Utf8cpp_SOURCE_DIR}
 	${GLFW_SOURCE_DIR}/include
 	${Lua_SOURCE_DIR}/src
 	${pluto_SOURCE_DIR}
@@ -18,6 +18,7 @@ include_directories(
 	${glm_SOURCE_DIR}
 	${glew_SOURCE_DIR}/include
 	${spdlog_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 ############################ FILE SYSTEM ################################
