@@ -2,9 +2,9 @@
 
 enum class MouseButton
 {
-	Left,
-	Right,
-	Middle,
-
-	Last
+    Left,
+    Right,
+    Middle,
+    
+    Last
 };

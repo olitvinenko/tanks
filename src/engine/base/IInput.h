@@ -1,6 +1,6 @@
 #pragma once
 
-class Vec2F;
+#include "../math/Vect2D.h"
 
 namespace UI
 {
@@ -31,6 +31,7 @@ struct IInput
     virtual ~IInput() = default;
     
     virtual void Read() = 0;
+    virtual void Clear() = 0;
     
     virtual void AddListener(IInputListener *listener) = 0;
     virtual void RemoveListener(IInputListener *listener) = 0;
@@ -38,6 +39,4 @@ struct IInput
     virtual bool GetKey(UI::Key key) const = 0;
     virtual bool GetMouseButton(MouseButton button) const = 0;
     virtual const Vec2F& GetMousePosition() const = 0;
-    
-    virtual void Clear() = 0;
 };
