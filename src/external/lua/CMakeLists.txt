@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.3)
+cmake_minimum_required (VERSION 3.4)
 project(Lua)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 add_library(lua
