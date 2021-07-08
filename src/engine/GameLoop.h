@@ -25,14 +25,9 @@ struct IRenderable
     virtual ~IRenderable() = default;
 };
 
-class Time
+struct Time
 {
-public:
-    static size_t GetTicksCount()
-    {
-        auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
-        return std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
-    }
+    static size_t GetTicksCount();
 };
 
 class GameLoop
@@ -66,6 +61,11 @@ class GameLoop
             std::for_each(m_targets.begin(), m_targets.end(), f);
         }
         
+        void clear()
+        {
+            m_targets.clear();
+        }
+        
         ~GameLoopSet()
         {
             assert(m_targets.size() == 0);
@@ -80,44 +80,13 @@ class GameLoop
     const int SKIP_FRAMES_MAX = 5;
     
 public:
-    GameLoop()
-		: m_lastTime(0.0)
-		, m_lag(0.0)
-    { }
+    GameLoop();
     
-    void Start()
-    {
-        m_lastTime = Time::GetTicksCount();
-        m_lag = 0.0;
-    }
+    ~GameLoop();
     
-    void Tick()
-    {
-        double current = Time::GetTicksCount();
-        double elapsed = current - m_lastTime;
-        
-        m_lastTime = current;
-        m_lag += elapsed;
-        
-        float realElapsedSec = elapsed / 1000.0;
-        m_updatables.for_each([realElapsedSec](std::shared_ptr<IUpdatable> f) { f->Update(realElapsedSec); });
-        
-        int loops = 0;
-        while (m_lag >= MS_PER_UPDATE && loops < SKIP_FRAMES_MAX)
-        {
-            float fixedDeltaTime = MS_PER_UPDATE / 1000.0;
-            m_fixedUpdatables.for_each([fixedDeltaTime](std::shared_ptr<IFixedUpdatable> f) { f->FixedUpdate(fixedDeltaTime); });
-            
-            m_lag -= MS_PER_UPDATE;
-            
-            //std::cout << elapsed << " " << fixedDeltaTime << "  " << m_lag << "  " << loops << std::endl;
-            loops++;
-        }
-        
-        float interpolation = m_lag / MS_PER_UPDATE;
-        
-        m_renderables.for_each([interpolation](std::shared_ptr<IRenderable> f) { f->Render(interpolation); });
-    }
+    void Start();
+    
+    void Tick();
 
     template<typename T, typename ... Args, std::enable_if_t<std::is_base_of<IFixedUpdatable, T>::value, bool> = true>
     std::weak_ptr<T> Add(Args&& ... args)

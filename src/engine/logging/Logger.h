@@ -25,8 +25,8 @@ private:
     
 public:
     
-    void SetLevel(ELevel level);
-    void FlushOn(ELevel level);
+    Logger* SetLevel(ELevel level);
+    Logger* FlushOn(ELevel level);
     
     ELevel GetLevel() const { return static_cast<ELevel>(m_logger->level()); }
     

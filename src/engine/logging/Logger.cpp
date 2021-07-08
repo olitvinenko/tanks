@@ -6,12 +6,14 @@ Logger::Logger(std::shared_ptr<spdlog::logger> logger)
     assert(m_logger);
 }
 
-void Logger::SetLevel(ELevel level)
+Logger* Logger::SetLevel(ELevel level)
 {
     m_logger->set_level(static_cast<spdlog::level::level_enum>(level));
+    return this;
 }
 
-void Logger::FlushOn(ELevel level)
+Logger* Logger::FlushOn(ELevel level)
 {
     m_logger->flush_on(static_cast<spdlog::level::level_enum>(level));
+    return this;
 }
