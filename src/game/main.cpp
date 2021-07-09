@@ -110,8 +110,13 @@ struct InputConsoleListener : public IInputListener
 
 #include <Engine.h>
 
+#include <ecs/ecsTest.h>
+
 int main(int, const char**)
 {
+    ECSTest();
+    
+    
     auto window = std::make_shared<GlfwWindow>("test window", 1024, 768, false);
     auto input = std::make_shared<GlfwInput>(window.get());
     auto clipboard = std::make_shared<GlfwClipboard>(window.get());
