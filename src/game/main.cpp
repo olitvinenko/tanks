@@ -64,15 +64,40 @@ struct TestUpdatable : public IUpdatable
     }
 };
 
+#include <rendering/base/IRender.h>
+#include <rendering/GlTexture.h>
+#include <rendering/SoilImage.h>
+#include <rendering/Line.h>
+
 struct TestRenderable : public IRenderable
 {
+    TestRenderable(std::shared_ptr<IRender> render)
+     : m_render(render)
+    {
+    }
+    
+    std::shared_ptr<IRender> m_render;
+
     void Render(float fixedDeltaTime) override
     {
         std::cout << "Render " << fixedDeltaTime << std::endl;
         
-        glClearColor(0, 0.4, 0, 1);
-        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-        glClear(GL_COLOR_BUFFER_BIT);
+//        glClearColor(0, 0.4, 0, 1);
+//        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+//        glClear(GL_COLOR_BUFFER_BIT);
+        
+        //TODO::
+        m_render->Begin();
+        {
+            // RectInt viewport{ 0, 0, (int)lc.GetPixelSize().x, (int)lc.GetPixelSize().y };
+            
+            Line lines[] = {
+                { {-0.5f, -0.5f}, {0.5, 0.5}, {255, 255, 255, 255} }
+            };
+            m_render->DrawLines(lines, 1);
+            //m_render->
+        }
+        m_render->End();
     }
 };
 
@@ -112,6 +137,34 @@ struct InputConsoleListener : public IInputListener
 
 #include <ecs/ecsTest.h>
 
+#include <rendering/RenderOpenGL.h>
+#include <rendering/RenderOpenGLv2.h>
+
+struct WindowListener : public IWindowListener
+{
+    WindowListener(std::shared_ptr<IRender> render)
+     : m_render(render)
+    {
+    }
+    
+    std::shared_ptr<IRender> m_render;
+    
+    void OnFrameBufferChanged(int width, int height) override
+    {
+        
+    }
+    
+    void OnSizeChanged(int width, int height) override
+    {
+        //m_render->OnResizeWnd(width, height);
+    }
+    
+    void OnClosed() override
+    {
+        
+    }
+};
+
 int main(int, const char**)
 {
     ECSTest();
@@ -121,17 +174,23 @@ int main(int, const char**)
     auto input = std::make_shared<GlfwInput>(window.get());
     auto clipboard = std::make_shared<GlfwClipboard>(window.get());
 
-    auto engine = std::make_unique<Engine>(input, clipboard, window);
+    auto renderer = std::make_shared<RenderOpenGL>();
+    renderer->Init();
+    
+    auto engine = std::make_unique<Engine>(input, clipboard, window, renderer);
     
     InputConsoleListener listener;
     engine->GetInput()->AddListener(&listener);
+    
+    WindowListener windowListener(renderer);
+    engine->GetWindow()->AddListener(&windowListener);
     
     auto& gameLoop = engine->GetGameLoop();
     
     {
         gameLoop->Add<FixedUpd>();
         gameLoop->Add<TestUpdatable>(input);
-        gameLoop->Add<TestRenderable>();
+        gameLoop->Add<TestRenderable>(renderer);
         
         gameLoop->Start();
     }

@@ -13,10 +13,15 @@ struct IInput;
 struct IClipboard;
 struct IWindow;
 
+struct IRender;
+
 class Engine : public Singleton<Engine>
 {
 public:
-    Engine(std::shared_ptr<IInput> input, std::shared_ptr<IClipboard> clipboard, std::shared_ptr<IWindow> window);
+    Engine(std::shared_ptr<IInput> input
+           , std::shared_ptr<IClipboard> clipboard
+           , std::shared_ptr<IWindow> window
+           , std::shared_ptr<IRender> renderer);
 
     std::unique_ptr<GameLoop>&   GetGameLoop()      { return m_gameLoop; }
     std::unique_ptr<ThreadPool>& GetThreadPool()    { return m_threadPool; }
@@ -25,6 +30,8 @@ public:
     std::shared_ptr<IInput>     GetInput() const        { return m_input; }
     std::shared_ptr<IClipboard> GetClipboard() const    { return m_clipboard; }
     std::shared_ptr<IWindow>    GetWindow() const       { return m_window; }
+    
+    std::shared_ptr<IRender>    GetRenreded() const     { return m_renderer; }
 
 private:
     
@@ -35,4 +42,6 @@ private:
     std::shared_ptr<IInput>     m_input;
     std::shared_ptr<IClipboard> m_clipboard;
     std::shared_ptr<IWindow>    m_window;
+    
+    std::shared_ptr<IRender>    m_renderer;
 };
