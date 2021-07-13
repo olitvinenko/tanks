@@ -12,7 +12,7 @@ include_directories(
 	${jsoncpp_SOURCE_DIR}
 	${engine_SOURCE_DIR}
 	${glew_SOURCE_DIR}/include
-    ${spdlog_SOURCE_DIR}
+    	${spdlog_SOURCE_DIR}
 )
 #########################################################################
 
